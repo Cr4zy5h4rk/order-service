@@ -59,7 +59,7 @@ spring:
       port: 8500
   datasource:
     type: com.zaxxer.hikari.HikariDataSource
-    url: jdbc:postgresql://localhost:5432/order
+    url: jdbc:postgresql://localhost:5433/order
     hikari:
       poolName: Hikari
       auto-commit: false
@@ -74,7 +74,7 @@ spring:
     cache: false
 
 server:
-  port: 8081
+  port: 8083
   # make sure requests the proxy uri instead of the server one
   forward-headers-strategy: native
 

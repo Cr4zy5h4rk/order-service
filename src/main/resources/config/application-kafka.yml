@@ -6,7 +6,7 @@ spring:
       kafka:
         binder:
           replicationFactor: 1
-          auto-create-topics: true
+          auto-create-topics: false
           brokers: localhost:9092
       bindings:
         binding-out-0:
