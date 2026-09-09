@@ -1,0 +1,19 @@
+entity Order {
+  orderDate Instant required
+  status OrderStatus required
+  customerId Long required
+}
+
+entity OrderItem {
+  productId Long required
+  quantity Integer required
+  unitPrice BigDecimal required
+}
+
+enum OrderStatus {
+  PENDING, CONFIRMED, SHIPPED, CANCELLED
+}
+
+relationship OneToMany {
+  Order to OrderItem
+}
