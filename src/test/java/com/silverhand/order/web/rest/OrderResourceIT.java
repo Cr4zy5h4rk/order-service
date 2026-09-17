@@ -15,6 +15,9 @@ import com.silverhand.order.domain.Order;
 import com.silverhand.order.domain.enumeration.OrderStatus;
 import com.silverhand.order.repository.OrderRepository;
 import com.silverhand.order.repository.search.OrderSearchRepository;
+import com.silverhand.order.service.DTO.CustomerDTO;
+import com.silverhand.order.service.client.CatalogClient;
+import com.silverhand.order.service.client.CustomerClient;
 import jakarta.persistence.EntityManager;
 import java.time.Instant;
 import java.util.List;
@@ -30,6 +33,7 @@ import org.springframework.boot.webmvc.test.autoconfigure.AutoConfigureMockMvc;
 import org.springframework.data.util.Streamable;
 import org.springframework.http.MediaType;
 import org.springframework.security.test.context.support.WithMockUser;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.transaction.annotation.Transactional;
 import tools.jackson.databind.ObjectMapper;
@@ -73,6 +77,12 @@ class OrderResourceIT {
     @Autowired
     private MockMvc restOrderMockMvc;
 
+    @MockitoBean
+    private CustomerClient customerClient;
+
+    @MockitoBean
+    private CatalogClient catalogClient;
+
     private Order order;
 
     private Order insertedOrder;
@@ -100,6 +110,7 @@ class OrderResourceIT {
     @BeforeEach
     void initTest() {
         order = createEntity();
+        when(customerClient.getCustomer(anyLong())).thenReturn(new CustomerDTO(/* renseigne les champs nécessaires */));
     }
 
     @AfterEach
