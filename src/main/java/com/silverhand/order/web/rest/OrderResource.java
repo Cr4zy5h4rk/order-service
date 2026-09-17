@@ -4,6 +4,9 @@ import com.silverhand.order.domain.Order;
 import com.silverhand.order.repository.OrderRepository;
 import com.silverhand.order.repository.search.OrderSearchRepository;
 import com.silverhand.order.service.OrderService;
+import com.silverhand.order.service.exceptions.CustomerNotFoundException;
+import com.silverhand.order.service.exceptions.InsufficientStockException;
+import com.silverhand.order.service.exceptions.ProductNotFoundException;
 import com.silverhand.order.web.rest.errors.BadRequestAlertException;
 import com.silverhand.order.web.rest.errors.ElasticsearchExceptionMapper;
 import jakarta.validation.Valid;
@@ -64,7 +67,15 @@ public class OrderResource {
         if (order.getId() != null) {
             throw new BadRequestAlertException("A new order cannot already have an ID", ENTITY_NAME, "idexists");
         }
-        order = orderService.createOrder(order);
+        try {
+            order = orderService.createOrder(order);
+        } catch (CustomerNotFoundException e) {
+            throw new BadRequestAlertException(e.getMessage(), ENTITY_NAME, "customernotfound");
+        } catch (ProductNotFoundException e) {
+            throw new BadRequestAlertException(e.getMessage(), ENTITY_NAME, "productnotfound");
+        } catch (InsufficientStockException e) {
+            throw new BadRequestAlertException(e.getMessage(), ENTITY_NAME, "insufficientstock");
+        }
         return ResponseEntity.created(new URI("/api/orders/" + order.getId()))
             .headers(HeaderUtil.createEntityCreationAlert(applicationName, true, ENTITY_NAME, order.getId().toString()))
             .body(order);
