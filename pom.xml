@@ -744,7 +744,7 @@
                             </platforms>
                         </from>
                         <to>
-                            <image>order:latest</image>
+                          <image>docker.io/cr4zy5h4rk/order-service:latest</image>
                         </to>
                         <container>
                             <entrypoint>

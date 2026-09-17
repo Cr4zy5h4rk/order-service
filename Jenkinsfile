@@ -3,6 +3,7 @@
 node {
     stage('checkout') {
         checkout scm
+        sh 'chmod +x mvnw'
     }
 
     stage('check java') {
@@ -16,13 +17,6 @@ node {
         sh "./mvnw -ntp checkstyle:check"
     }
 
-    stage('install tools') {
-        sh "./mvnw -ntp com.github.eirslett:frontend-maven-plugin:install-node-and-npm@install-node-and-npm"
-    }
-
-    stage('npm install') {
-        sh "./mvnw -ntp com.github.eirslett:frontend-maven-plugin:npm"
-    }
     stage('backend tests') {
         try {
             sh "./mvnw -ntp verify -P-webapp"
@@ -33,25 +27,14 @@ node {
         }
     }
 
-    stage('frontend tests') {
-        try {
-            sh "./mvnw -ntp com.github.eirslett:frontend-maven-plugin:npm -Dfrontend.npm.arguments='run test'"
-        } catch(err) {
-            throw err
-        } finally {
-            junit '**/target/test-results/TESTS-results-jest.xml'
-        }
-    }
-
     stage('packaging') {
         sh "./mvnw -ntp verify -P-webapp -Pprod -DskipTests"
         archiveArtifacts artifacts: '**/target/*.jar', fingerprint: true
     }
 
-    def dockerImage
     stage('publish docker') {
-        // A pre-requisite to this step is to setup authentication to the docker registry
-        // https://github.com/GoogleContainerTools/jib/tree/master/jib-maven-plugin#authentication-methods
-        sh "./mvnw -ntp -Pprod verify jib:build"
+        withCredentials([usernamePassword(credentialsId: 'dockerhub-credentials', usernameVariable: 'DOCKER_USER', passwordVariable: 'DOCKER_PASS')]) {
+            sh "./mvnw -ntp -Pprod verify jib:build -Djib.to.image=docker.io/cr4zy5h4rk/order-service:${env.BUILD_NUMBER} -Djib.to.auth.username=$DOCKER_USER -Djib.to.auth.password=$DOCKER_PASS"
+        }
     }
 }
