@@ -1,4 +1,4 @@
-package com.silverhand.order.client;
+package com.silverhand.order.service.client;
 
 import feign.RequestInterceptor;
 import feign.RequestTemplate;

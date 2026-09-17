@@ -1,7 +1,7 @@
 package com.silverhand.order.service;
 
-import com.silverhand.order.client.CatalogClient;
-import com.silverhand.order.client.CustomerClient;
+import com.silverhand.order.service.client.CatalogClient;
+import com.silverhand.order.service.client.CustomerClient;
 
 import com.silverhand.order.domain.Order;
 import com.silverhand.order.domain.OrderItem;

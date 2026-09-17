@@ -1,4 +1,4 @@
-package com.silverhand.order.client;
+package com.silverhand.order.service.client;
 
 import com.silverhand.order.service.DTO.CustomerDTO;
 import org.springframework.cloud.openfeign.FeignClient;
