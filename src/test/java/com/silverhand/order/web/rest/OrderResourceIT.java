@@ -16,9 +16,11 @@ import com.silverhand.order.domain.enumeration.OrderStatus;
 import com.silverhand.order.repository.OrderRepository;
 import com.silverhand.order.repository.search.OrderSearchRepository;
 import com.silverhand.order.service.DTO.CustomerDTO;
+import com.silverhand.order.service.DTO.ProductDTO;
 import com.silverhand.order.service.client.CatalogClient;
 import com.silverhand.order.service.client.CustomerClient;
 import jakarta.persistence.EntityManager;
+import java.math.BigDecimal;
 import java.time.Instant;
 import java.util.List;
 import java.util.Random;
@@ -107,10 +109,32 @@ class OrderResourceIT {
         return new Order().orderDate(UPDATED_ORDER_DATE).status(UPDATED_STATUS).customerId(UPDATED_CUSTOMER_ID);
     }
 
+    private static CustomerDTO createDefaultCustomerDTO() {
+        CustomerDTO dto = new CustomerDTO();
+        dto.setId(DEFAULT_CUSTOMER_ID);
+        dto.setFirstName("John");
+        dto.setLastName("Doe");
+        dto.setEmail("john.doe@test.com");
+        // ... autres champs obligatoires
+        return dto;
+    }
+
+    private static ProductDTO createDefaultProductDTO() {
+        ProductDTO dto = new ProductDTO();
+        dto.setId(1L);
+        dto.setName("Test Product");
+        dto.setPrice(BigDecimal.valueOf(100.00));
+        dto.setStock(10);
+        // ... autres champs obligatoires
+        return dto;
+    }
+
     @BeforeEach
     void initTest() {
         order = createEntity();
-        when(customerClient.getCustomer(anyLong())).thenReturn(new CustomerDTO(/* renseigne les champs nécessaires */));
+        when(customerClient.getCustomer(anyLong())).thenReturn(createDefaultCustomerDTO());
+        when(catalogClient.getProduct(anyLong())).thenReturn(createDefaultProductDTO());
+        // adapter la signature réelle de CatalogClient
     }
 
     @AfterEach
