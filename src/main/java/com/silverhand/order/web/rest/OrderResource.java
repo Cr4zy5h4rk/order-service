@@ -3,6 +3,7 @@ package com.silverhand.order.web.rest;
 import com.silverhand.order.domain.Order;
 import com.silverhand.order.repository.OrderRepository;
 import com.silverhand.order.repository.search.OrderSearchRepository;
+import com.silverhand.order.service.OrderService;
 import com.silverhand.order.web.rest.errors.BadRequestAlertException;
 import com.silverhand.order.web.rest.errors.ElasticsearchExceptionMapper;
 import jakarta.validation.Valid;
@@ -40,11 +41,14 @@ public class OrderResource {
 
     private final OrderRepository orderRepository;
 
+    private final OrderService orderService;
+
     private final OrderSearchRepository orderSearchRepository;
 
-    public OrderResource(OrderRepository orderRepository, OrderSearchRepository orderSearchRepository) {
+    public OrderResource(OrderRepository orderRepository, OrderService orderService, OrderSearchRepository orderSearchRepository) {
         this.orderRepository = orderRepository;
         this.orderSearchRepository = orderSearchRepository;
+        this.orderService = orderService;
     }
 
     /**
@@ -60,8 +64,7 @@ public class OrderResource {
         if (order.getId() != null) {
             throw new BadRequestAlertException("A new order cannot already have an ID", ENTITY_NAME, "idexists");
         }
-        order = orderRepository.save(order);
-        orderSearchRepository.index(order);
+        order = orderService.createOrder(order);
         return ResponseEntity.created(new URI("/api/orders/" + order.getId()))
             .headers(HeaderUtil.createEntityCreationAlert(applicationName, true, ENTITY_NAME, order.getId().toString()))
             .body(order);
